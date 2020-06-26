@@ -1,30 +1,31 @@
 #FROM registry.access.redhat.com/ubi8/ubi
-FROM centos:8
+FROM centos:7
 
 ENV ansible_dir=/root/JetSki/ansible-ipi-install
 
-RUN yum -y install python3 --nodocs
+RUN yum -y install python3
 RUN pip3 install ansible
-RUN yum -y install epel-release --nodocs
+RUN yum -y install epel-release
 RUN yum --enablerepo=epel -y install sshpass
-RUN yum -y install openssh-clients --nodocs
-RUN yum -y install git --nodocs
+RUN yum -y install openssh-clients
+RUN yum -y install git
 RUN pip3 install jmespath
 
 # Hammercli
 # epel-release is needed, but was installed above.
-RUN yum install -y https://yum.theforeman.org/releases/2.1/el8/x86_64/foreman-release.rpm
-RUN yum install -y https://yum.theforeman.org/releases/2.1/el8/x86_64/rubygem-hammer_cli-2.1.0-1.el8.noarch.rpm 
-RUN yum install -y http://yum.theforeman.org/releases/2.1/el8/x86_64/rubygem-hammer_cli_foreman-2.1.0-2.el8.noarch.rpm
+RUN yum install -y epel-release \
+    https://yum.theforeman.org/releases/2.1/el7/x86_64/foreman-release.rpm \
+    centos-release-scl-rh \
+    rh-ruby25-ruby
 
-RUN yum install -y rubygem-hammer_cli \
-	rubygem-hammer_cli_foreman
+RUN yum install -y tfm-rubygem-hammer_cli \
+    tfm-rubygem-hammer_cli_foreman
 
 RUN pip3 install j2cli
 
 #COPY ansible-ipi-install /root/ansible-ipi-install
 ADD https://api.github.com/repos/jaredoconnell/JetSki/git/refs/heads/containerized version.json
-RUN git clone --single-branch --branch containerized https://github.com/jaredoconnell/JetSki.git /root/JetSki
+RUN git clone --single-branch --branch centos-7 https://github.com/jaredoconnell/JetSki.git /root/JetSki
 
 #CMD ansible-playbook /install/ansible-ipi-install/prep_kni_user.yml
 
